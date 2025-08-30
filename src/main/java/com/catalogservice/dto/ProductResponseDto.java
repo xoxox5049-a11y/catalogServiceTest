@@ -1,15 +1,15 @@
 package com.catalogservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
-@Setter
+@Builder(toBuilder=true)
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductResponseDto{
     private Long id;
     private String name;
