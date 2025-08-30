@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@Table(name = "product", indexes = @Index(columnList = "name"))
+@Table(name = "product", indexes = {@Index(columnList = "name"), @Index(columnList = "sku")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
     @Id
@@ -30,8 +30,10 @@ public class Product {
     private Instant updatedAt;
     @Version
     private Long version;
+    @Column(nullable= false, length = 32, unique = true)
+    private String sku;
 
-    public Product(String name, String description, BigDecimal price, Integer stock) {
+    public Product(String name, String description, BigDecimal price, Integer stock, String sku) {
         if(Objects.isNull(name) || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Product name is null or empty");
         } else {
@@ -52,6 +54,11 @@ public class Product {
         else {
             this.stock = stock;
         }
+        if(Objects.isNull(sku) || sku.trim().isEmpty()) {
+            throw new IllegalArgumentException("SKU must be not null");
+        } else {
+            this.sku = sku.trim().toUpperCase();
+        }
         this.description = description;
     }
 
@@ -71,6 +78,14 @@ public class Product {
             throw new IllegalArgumentException("Product name is null or empty");
         } else {
             this.name = name.trim();
+        }
+    }
+
+    public void setSku(String sku) {
+        if(Objects.isNull(sku) || sku.trim().isEmpty()) {
+            throw new IllegalArgumentException("Sku is null or empty");
+        } else {
+            this.sku = sku.trim().toUpperCase();
         }
     }
 

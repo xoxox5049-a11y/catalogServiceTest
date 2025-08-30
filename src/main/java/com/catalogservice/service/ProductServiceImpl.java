@@ -4,6 +4,7 @@ import com.catalogservice.dto.ProductCreateRequestDto;
 import com.catalogservice.dto.ProductResponseDto;
 import com.catalogservice.dto.ProductUpdateRequestDto;
 import com.catalogservice.entity.Product;
+import com.catalogservice.exceptions.DuplicateProductException;
 import com.catalogservice.exceptions.NotFoundException;
 import com.catalogservice.mappers.ProductMapper;
 import com.catalogservice.repository.ProductRepository;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -30,6 +32,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductResponseDto createProduct(ProductCreateRequestDto productCreateRequestDto) {
+        Optional<Product> bySkuIgnoreCase = productRepository.findBySkuIgnoreCase(productCreateRequestDto.getSku());
+        if(bySkuIgnoreCase.isPresent()){
+            throw new DuplicateProductException("Product with sku " + productCreateRequestDto.getSku() + " already exists");
+        }
         Product save = productRepository.save(mapper.mapToProduct(productCreateRequestDto));
         return mapper.mapToProductResponseDto(save);
     }
@@ -86,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
         if(sort.isUnsorted()){
             return;
         }
-        Set<String> validFields = Set.of("name", "price", "stock", "createdAt");
+        Set<String> validFields = Set.of("name", "price", "stock", "createdAt", "sku");
         sort.stream().filter(order -> !validFields.contains(order.getProperty())).forEach(order -> {
             throw new IllegalArgumentException(String.format("Invalid sort parameter: %s", order.getProperty()));
         });

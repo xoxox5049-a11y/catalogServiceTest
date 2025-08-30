@@ -20,4 +20,5 @@ public class ProductResponseDto{
     private Instant createdAt;
     @JsonFormat(shape =  JsonFormat.Shape.STRING)
     private Instant updatedAt;
+    private String sku;
 }

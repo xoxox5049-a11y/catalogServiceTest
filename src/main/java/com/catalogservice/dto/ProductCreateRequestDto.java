@@ -1,5 +1,10 @@
 package com.catalogservice.dto;
 
-public class ProductCreateRequestDto extends BaseDto{
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
+public class ProductCreateRequestDto extends BaseDto{
+    @NotBlank
+    @Size(min=3, max=32)
+    private String sku;
 }
