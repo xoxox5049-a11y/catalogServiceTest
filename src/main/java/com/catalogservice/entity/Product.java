@@ -81,14 +81,6 @@ public class Product {
         }
     }
 
-    public void setSku(String sku) {
-        if(Objects.isNull(sku) || sku.trim().isEmpty()) {
-            throw new IllegalArgumentException("Sku is null or empty");
-        } else {
-            this.sku = sku.trim().toUpperCase();
-        }
-    }
-
     public void setPrice(BigDecimal price) {
         if(price == null) {
             throw new IllegalArgumentException("Price must be not null");
