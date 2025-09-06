@@ -2,6 +2,7 @@ package com.catalogservice.exceptions;
 
 import com.catalogservice.dto.ErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -35,7 +36,12 @@ public class ApiExceptionHandler {
         for(FieldError fieldError : fieldErrors) {
             details.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
-        return generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), getPath(httpServletRequest),details);
+        return generateErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed", getPath(httpServletRequest),details);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolationException(DataIntegrityViolationException e, HttpServletRequest httpServletRequest) {
+        return generateErrorResponse(HttpStatus.CONFLICT, "SKU CONFLICT", getPath(httpServletRequest), null);
     }
 
     @ExceptionHandler(DuplicateProductException.class)
@@ -45,7 +51,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleException(Exception e, HttpServletRequest httpServletRequest) {
-        return generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), getPath(httpServletRequest), null);
+        return generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", getPath(httpServletRequest), null);
     }
 
     private ResponseEntity<ErrorResponseDto> generateErrorResponse(HttpStatus status, String message, String path, Map<String, String> details) {

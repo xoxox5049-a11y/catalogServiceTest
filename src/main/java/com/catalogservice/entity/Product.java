@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@Table(name = "product", indexes = {@Index(columnList = "name"), @Index(columnList = "sku")})
+@Table(name = "product", indexes = @Index(columnList = "name"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
     @Id

@@ -25,7 +25,7 @@ public class ProductRepoTest {
     @Test
     public void testSaveAndRead() {
         BigDecimal price = new BigDecimal("100");
-        Product product = new Product("product1", "descProduct1", price, 1);
+        Product product = new Product("product1", "descProduct1", price, 1, "1");
         Product save = productRepository.saveAndFlush(product);
 
         Product product1 = productRepository.findById(save.getId()).orElse(null);
@@ -40,7 +40,7 @@ public class ProductRepoTest {
     @Test
     public void existsByNameIgnoreCase() {
         BigDecimal price = new BigDecimal("100");
-        Product productToSave2 = new Product("Product1", "descProduct1", price, 1);
+        Product productToSave2 = new Product("Product1", "descProduct1", price, 1, "1");
         Product save2 = productRepository.saveAndFlush(productToSave2);
 
         Product product2 = productRepository.findById(save2.getId()).orElse(null);
@@ -59,9 +59,9 @@ public class ProductRepoTest {
         BigDecimal pric1 = new BigDecimal("100");
         BigDecimal pric2 = new BigDecimal("200");
         BigDecimal pric3 = new BigDecimal("300");
-        Product product1 = new Product("Aproduct1", "descProduct1", pric1, 1);
-        Product product2 = new Product("Bproduct2", "descProduct2", pric2, 2);
-        Product product3 = new Product("Cproduct3", "descProduct3", pric3, 3);
+        Product product1 = new Product("Aproduct1", "descProduct1", pric1, 1, "1");
+        Product product2 = new Product("Bproduct2", "descProduct2", pric2, 2, "2");
+        Product product3 = new Product("Cproduct3", "descProduct3", pric3, 3, "3");
         List<Product> products =List.of(product1, product2, product3);
         productRepository.saveAll(products);
         productRepository.flush();
@@ -78,7 +78,7 @@ public class ProductRepoTest {
     @Test
     public void checkUpdate() throws InterruptedException {
         BigDecimal price = new BigDecimal("100");
-        Product productToSave = new Product("Product1", "descProduct1", price, 1);
+        Product productToSave = new Product("Product1", "descProduct1", price, 1, "1");
         Product save2 = productRepository.saveAndFlush(productToSave);
 
         Product product1 = productRepository.findById(save2.getId()).orElse(null);

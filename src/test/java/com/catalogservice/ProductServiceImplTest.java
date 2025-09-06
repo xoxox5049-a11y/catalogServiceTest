@@ -72,7 +72,7 @@ public class ProductServiceImplTest {
     @Test
     public void getById_happyCase() {
         Long id = 2213L;
-        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3);
+        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3, "1");
         ReflectionTestUtils.setField(product, "id", id);
         when(productRepository.findById(eq(id))).thenReturn(Optional.of(product));
 
@@ -101,7 +101,7 @@ public class ProductServiceImplTest {
     @Test
     public void deleteById_happyCase() {
         Long id = 2213L;
-        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3);
+        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3, "1");
 
         when(productRepository.findById(eq(id))).thenReturn(Optional.of(product));
 
@@ -131,7 +131,7 @@ public class ProductServiceImplTest {
     @Test
     public void updateById_happyCase() {
         Long id = 10L;
-        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3);
+        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3, "1");
         String oldName = product.getName();
         String oldDesc = product.getDescription();
         BigDecimal oldPrice = product.getPrice();
@@ -194,7 +194,7 @@ public class ProductServiceImplTest {
     @Test
     public void updateById_invalidNameTest() {
         Long id = 10L;
-        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3);
+        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3, "1");
 
         when(productRepository.findById(eq(id))).thenReturn(Optional.of(product));
 
@@ -211,7 +211,7 @@ public class ProductServiceImplTest {
     @Test
     public void updateById_invalidPriceTest() {
         Long id = 10L;
-        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3);
+        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3, "1");
 
         when(productRepository.findById(eq(id))).thenReturn(Optional.of(product));
 
@@ -231,7 +231,7 @@ public class ProductServiceImplTest {
     @Test
     public void updateById_invalidStockTest() {
         Long id = 10L;
-        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3);
+        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3, "1");
 
         when(productRepository.findById(eq(id))).thenReturn(Optional.of(product));
 
@@ -250,9 +250,9 @@ public class ProductServiceImplTest {
 
     @Test
     public void getAllTest() {
-        Product product1 = new Product("Aproduct1", "descProduct1", new BigDecimal("100"), 1);
-        Product product2 = new Product("Bproduct2", "descProduct2", new BigDecimal("200"), 2);
-        Product product3 = new Product("Cproduct3", "descProduct3", new BigDecimal("300"), 3);
+        Product product1 = new Product("Aproduct1", "descProduct1", new BigDecimal("100"), 1, "1");
+        Product product2 = new Product("Bproduct2", "descProduct2", new BigDecimal("200"), 2, "2");
+        Product product3 = new Product("Cproduct3", "descProduct3", new BigDecimal("300"), 3, "3");
 
         List<Product> productList = List.of(product1, product2, product3);
         PageRequest pageRequest = PageRequest.of(0, 3);
@@ -274,8 +274,8 @@ public class ProductServiceImplTest {
 
     @Test
     public void searchByNameTest_withoutSpaces() {
-        Product product1 = new Product("Iphone 13", "descProduct1", new BigDecimal("100"), 1);
-        Product product2 = new Product("Iphone 14", "descProduct2", new BigDecimal("200"), 2);
+        Product product1 = new Product("Iphone 13", "descProduct1", new BigDecimal("100"), 1, "1");
+        Product product2 = new Product("Iphone 14", "descProduct2", new BigDecimal("200"), 2, "2");
 
         List<Product> productList = List.of(product1, product2);
         PageRequest pageRequest = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
@@ -295,7 +295,7 @@ public class ProductServiceImplTest {
 
     @Test
     public void searchByNameTest_withSpaces() {
-        Product product1 = new Product("iphone           ", "descProduct1", new BigDecimal("100"), 1);
+        Product product1 = new Product("iphone           ", "descProduct1", new BigDecimal("100"), 1, "1");
         List<Product> productList = List.of(product1);
         PageRequest pageRequest = PageRequest.of(0, 2, Sort.by(Sort.Direction.ASC, "name"));
         Page<Product> productPage = new PageImpl<Product>(productList, pageRequest, 1);
@@ -334,7 +334,7 @@ public class ProductServiceImplTest {
     @Test
     public void deleteById() {
         Long id = 1L;
-        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3);
+        Product product = new Product("Product1", "desc", new BigDecimal("100.00"), 3, "1");
 
         when(productRepository.findById(eq(id))).thenReturn(Optional.of(product));
 
