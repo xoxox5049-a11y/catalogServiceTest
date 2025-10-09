@@ -1,6 +1,7 @@
 package com.catalogservice.dto.auth;
 
-import jakarta.validation.constraints.Max;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -8,13 +9,16 @@ import lombok.Getter;
 public class RegisterRequestDto {
     @Getter
     @NotBlank
-    @Max(value = 254)
+    @Email
+    @Size(max = 254)
     private String email;
     @Getter
     @NotBlank
     @Size(min=3, max=32)
     private String username;
     @NotBlank
-    @Max(value = 8)
+    @Size(min=8)
+    @Getter
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 }

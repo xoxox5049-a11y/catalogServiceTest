@@ -1,17 +1,16 @@
 package com.catalogservice.dto.auth;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.Instant;
 
+@Getter
+@Setter
 public class RegisterResponseDto {
-    @Getter
     private Long id;
-    @Getter
     private String email;
-    @Getter
     private String username;
-    private String password;
-    @Getter
-    private LocalDate createdAt;
+    private Instant createdAt;
 }

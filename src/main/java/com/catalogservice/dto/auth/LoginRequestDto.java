@@ -1,9 +1,11 @@
 package com.catalogservice.dto.auth;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-
+@Getter
 public class LoginRequestDto {
-    @Getter
+    @NotBlank
     private String email;
+    @NotBlank
     private String password;
 }
