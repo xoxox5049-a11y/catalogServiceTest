@@ -10,6 +10,7 @@ import com.catalogservice.mappers.UserMapper;
 import com.catalogservice.repository.RoleRepository;
 import com.catalogservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     @Override
     public RegisterResponseDto register(RegisterRequestDto registerRequestDto) {
-        if(userRepository.existsByEmailIgnoreCase(registerRequestDto.getEmail().trim())) {
+        if(userRepository.existsByEmailIgnoreCase(registerRequestDto.getEmail().trim().toLowerCase())) {
             throw new DuplicateEmailException("Email already exists");
         }
         if(userRepository.existsByUsernameIgnoreCase(registerRequestDto.getUsername().trim())) {
