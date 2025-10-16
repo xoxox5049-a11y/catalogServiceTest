@@ -1,11 +1,15 @@
 package com.catalogservice.service.auth;
 
+import com.catalogservice.dto.auth.LoginRequestDto;
+import com.catalogservice.dto.auth.LoginResponseDto;
 import com.catalogservice.dto.auth.RegisterRequestDto;
 import com.catalogservice.dto.auth.RegisterResponseDto;
 import com.catalogservice.entity.Role;
 import com.catalogservice.entity.User;
+import com.catalogservice.exceptions.AccountDisabledException;
 import com.catalogservice.exceptions.DuplicateEmailException;
 import com.catalogservice.exceptions.DuplicateUsernameException;
+import com.catalogservice.exceptions.InvalidCredentialsException;
 import com.catalogservice.mappers.UserMapper;
 import com.catalogservice.repository.RoleRepository;
 import com.catalogservice.repository.UserRepository;
@@ -41,5 +45,24 @@ public class AuthServiceImpl implements AuthService {
         user.setEnabled(true);
         user.addRole(roleUser.orElseThrow(()->new IllegalStateException("Missing seed role ROLE_USER")));
         return userMapper.mapToRegisterResponseDto(userRepository.save(user));
+    }
+
+    @Override
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        User user = userRepository.findByEmailIgnoreCase(loginRequestDto
+                .getEmail().trim().toLowerCase()).orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
+        if(!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Invalid credentials");
+        }
+        if(!user.getIsEnabled()) {
+            throw new AccountDisabledException("Account disabled");
+        }
+        return LoginResponseDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .createdAt(user.getCreatedAt())
+                .roles(user.getRoles().stream().sorted().map(Role::getName).toList())
+                .build();
     }
 }
