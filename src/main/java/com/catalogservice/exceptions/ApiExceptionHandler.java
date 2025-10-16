@@ -40,6 +40,30 @@ public class ApiExceptionHandler {
 
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidCredentialsException(InvalidCredentialsException e, HttpServletRequest httpServletRequest) {
+        String path = getPath(httpServletRequest);
+        String requestId = httpServletRequest.getHeader("X-Request-Id");
+        log.warn("401 INVALID_CREDENTIALS requestId={} path={} msg={}",
+                requestId, path, e.getMessage());
+
+        return generateErrorResponse(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED",
+                path, requestId, "INVALID_CREDENTIALS", null);
+
+    }
+
+    @ExceptionHandler(AccountDisabledException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccountDisabledException(AccountDisabledException e, HttpServletRequest httpServletRequest) {
+        String path = getPath(httpServletRequest);
+        String requestId = httpServletRequest.getHeader("X-Request-Id");
+        log.warn("403 FORBIDDEN requestId={} path={} msg={}",
+                requestId, path, e.getMessage());
+
+        return generateErrorResponse(HttpStatus.FORBIDDEN, "FORBIDDEN",
+                path, requestId, "ACCOUNT_DISABLED", null);
+
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
                                                                                   HttpServletRequest httpServletRequest) {
