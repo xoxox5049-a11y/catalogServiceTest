@@ -13,7 +13,7 @@ import java.util.Objects;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Short id;
     @Column(nullable = false, length = 32, unique = true)
     private String name;
 
