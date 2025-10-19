@@ -1,6 +1,8 @@
 package com.catalogservice.controller.auth;
 
 import com.catalogservice.dto.ErrorResponseDto;
+import com.catalogservice.dto.auth.LoginRequestDto;
+import com.catalogservice.dto.auth.LoginResponseDto;
 import com.catalogservice.dto.auth.RegisterRequestDto;
 import com.catalogservice.dto.auth.RegisterResponseDto;
 import com.catalogservice.service.auth.AuthService;
@@ -36,5 +38,22 @@ public class AuthController {
     public ResponseEntity<RegisterResponseDto> register(@RequestBody @Valid RegisterRequestDto requestDto) {
         RegisterResponseDto register = authService.register(requestDto);
         return ResponseEntity.created(URI.create("/users/" + register.getId())).body(register);
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "Вход по email+password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "login",
+                    content = @Content(schema = @Schema(implementation = LoginResponseDto.class))),
+            @ApiResponse(responseCode = "401", description = "INVALID_CREDENTIALS",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
+            @ApiResponse(responseCode = "403", description = "ACCOUNT_DISABLED",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "VALIDATION_ERROR",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
+    })
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+        LoginResponseDto login = authService.login(loginRequestDto);
+        return ResponseEntity.ok(login);
     }
 }

@@ -1,6 +1,10 @@
 package com.catalogservice;
 
 import com.catalogservice.dto.auth.RegisterRequestDto;
+import com.catalogservice.entity.User;
+import com.catalogservice.repository.UserRepository;
+import com.catalogservice.service.auth.AuthService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +33,10 @@ public class AuthControllerIT {
 
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void register_shouldReturn201_andLocation_andBody() throws Exception {
@@ -126,5 +134,107 @@ public class AuthControllerIT {
                 .andExpect(jsonPath("$.code").value("UNIQUE_VIOLATION"))
                 .andExpect(jsonPath("$.details.username").exists())
                 .andExpect(jsonPath("$.details.username[0]").value("already exists"));
+    }
+
+    @Test
+    void login_shouldReturn200_ok() throws Exception {
+        String jsonToRegister = objectMapper.writeValueAsString(
+                Map.of("email","testEmail@gmail.com",
+                        "username","testUsername",
+                        "password","testPassword1")
+        );
+
+        mockMvc.perform(post("/auth/register")
+                        .contentType("application/json")
+                        .accept("application/json")
+                        .content(jsonToRegister))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.email").value("testemail@gmail.com"))
+                .andExpect(jsonPath("$.username").value("testUsername"));
+
+
+        String jsonToLogin = objectMapper.writeValueAsString(
+                Map.of("email","testEmail@gmail.com",
+                        "password","testPassword1")
+        );
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType("application/json")
+                        .accept("application/json")
+                        .content(jsonToLogin))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.email").value("testemail@gmail.com"))
+                .andExpect(jsonPath("$.username").value("testUsername"))
+                .andExpect(jsonPath("$.roles").isNotEmpty());
+    }
+
+    @Test
+    void login_shouldReturn401_invalid_credentials() throws Exception {
+        String jsonToRegister = objectMapper.writeValueAsString(
+                Map.of("email","testEmail@gmail.com",
+                        "username","testUsername",
+                        "password","testPassword1")
+        );
+
+        mockMvc.perform(post("/auth/register")
+                        .contentType("application/json")
+                        .accept("application/json")
+                        .content(jsonToRegister))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.email").value("testemail@gmail.com"))
+                .andExpect(jsonPath("$.username").value("testUsername"));
+
+
+        String jsonToLogin = objectMapper.writeValueAsString(
+                Map.of("email","testEmail@gmail.com",
+                        "password","testPassword12323")
+        );
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType("application/json")
+                        .accept("application/json")
+                        .content(jsonToLogin))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").exists())
+                .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"));
+    }
+
+    @Test
+    void login_shouldReturn403_disabled_user() throws Exception {
+        String jsonToRegister = objectMapper.writeValueAsString(
+                Map.of("email","testEmail@gmail.com",
+                        "username","testUsername",
+                        "password","testPassword1")
+        );
+
+        mockMvc.perform(post("/auth/register")
+                        .contentType("application/json")
+                        .accept("application/json")
+                        .content(jsonToRegister))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.email").value("testemail@gmail.com"))
+                .andExpect(jsonPath("$.username").value("testUsername"));
+
+
+        String jsonToLogin = objectMapper.writeValueAsString(
+                Map.of("email","testEmail@gmail.com",
+                        "password","testPassword1")
+        );
+
+        User user = userRepository.findByEmailIgnoreCase("testEmail@gmail.com").orElseThrow();
+        user.setEnabled(false);
+        userRepository.save(user);
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType("application/json")
+                        .accept("application/json")
+                        .content(jsonToLogin))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").exists())
+                .andExpect(jsonPath("$.code").value("ACCOUNT_DISABLED"));
     }
 }
